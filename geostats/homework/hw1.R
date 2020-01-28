@@ -4,6 +4,7 @@ source("~/spring2020/geostats/image.legend.r")
 source("~/spring2020/geostats/hscatter.r")
 source("~/spring2020/geostats/corrplot.r")
 
+#==========================================
 # Swiss Contour
 swiss <- read.table("~/spring2020/geostats/datasets/swiss.txt",header=T)
 swiss.conc <- interp(swiss$long,swiss$lat,swiss$rainfall,nx=150,ny=150)
@@ -15,9 +16,6 @@ image(swiss.conc,xlab="long",ylab="lat",cex.lab=1.6,   # Creates greyscale map o
 map("world","switzerland")
 image.legend(0,0,zlim=range(swiss$rainfall),       # Puts a legend on the map with upper
              col=rev(heat.colors(24)))                     #   left corner at (3600,25).                  # Overlays concentration locations.
-contour(swiss$rainfall, xlab="x",labcex=1.5,ylab="y", # Creates a contour plot with the
-        cex.axis=1.5,cex.lab=1.6,cex.main=1.2,        #   interpolated logconc values.
-        main="Rainfall")
 
 # Swiss histogram
 #brk <- seq(0,max(swiss$rainfall),20)
@@ -42,6 +40,7 @@ for (i in 1:9){                             # Loops through the 9 indicator plot
    cex.main=1.4)                           #   and below the threshhold.
 }        
 #========================================================================================================
+# Wolf Camp Data
 library(geoR)
 data(wolfcamp)
 coords = wolfcamp$coords
@@ -62,10 +61,16 @@ corrplot(x=coords[,1], y=coords[,2],wolfcamp$data,wolfcamp$data,h=c(1,0),1)
 #========================================================================================================
 # Phytophthora Data
 phyto <- read.table("~/spring2020/geostats/datasets/phytoph.txt")
+phyto.conc <- interp(phyto[,1],phyto[,2],phyto[,4],nx=150,ny=150)
+image(phyto.conc,xlab="X",ylab="Y",cex.lab=1.6,   # Creates greyscale map of interpolated
+      main="Soil Moisture Percentage",   #   log concentrations using the colors
+      cex.axis=1.5,col=rev(heat.colors(24)),        #   in "heat.colors" in reverse, with
+      cex.main=1.2) #   axis labels and a title.
 hscatter(phyto[,1],phyto[,2],phyto[,3],phyto[,4],h=c(1,0))
 hscatter(phyto[,1],phyto[,2],phyto[,3],phyto[,4],h=c(0,1))
 
 #================================
+# Chorley Cancer
 library(spatstat)
 data("chorley")
 points(chorley$x,chorley$y,col="red")
