@@ -1,8 +1,8 @@
 library(maps)
 library(akima)
-source("~/spring2020/geostats/image.legend.r")
-source("~/spring2020/geostats/hscatter.r")
-source("~/spring2020/geostats/corrplot.r")
+source("~/spring2020/geostats/scripts/image.legend.r")
+source("~/spring2020/geostats/scripts/hscatter.r")
+source("~/spring2020/geostats/scripts/corrplot.r")
 
 #==========================================
 # Swiss Contour
@@ -90,3 +90,4 @@ quadrat.test(chorley, nx=5, ny=5,
              conditional=TRUE, CR=1,
              nsim=1999)
 chorley.extra$plotit()
+
