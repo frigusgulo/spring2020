@@ -1,0 +1,71 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\graphicspath{/home/dunbar/spring2020/geostats/homework/1_hw/images}
+
+
+\title{Stats 544 - Homework 1}
+\author{Franklyn Dunbar}
+\date{Feb 3 2019}
+
+\begin{document}
+
+
+\section*{Switzerland Rainfall Data}
+467 daily rainfall measurements were made in Switzerland in May, 1986. This data is a sub-set of a continuous sample, and is univariate. Upon creating a histogram of the rainfall during a 24 hour window, we can see that the measurements are normally distrbuted around 150cm in depth.
+
+\includegraphics[scale=.5]{'srf_hist.png'}
+\newline
+
+By interpolating the measurements and plotting the interpolating via heatmap, we can analyze an estimate on what the continuous rainfall surface is. Though outliers strongly alter interpolation, the heatmap provides a general idea of what the rainfall is over the total area. We can see in the heatmap that there is a rainfall low up the middle of switzerland trending to the north-east, with two concentrated blogs along the margins of the low that trend in the same direction. My guess is that this is a product of topography, given the distinct geometry. 
+\newline
+
+\includegraphics[scale=0.5]{'Rplot09.png'}
+\newline
+
+Another method to visualize the interpolation is with an indicator plot. This shows the percentage of the interpolated points that are above a certain threshold. This plots are sort of a binary heat map and show similar trends; a north-east trending low blob across the country and zones of higher rainfall along it's margins. 
+
+\includegraphics[scale=0.5]{'Rplot07.png'}
+
+\section*{Wolfcamp Aquifer Data}
+The Wolfcamp Aquifer data is a sample of piezometric-head heights (meters above sea level) for an aquifer is West Texas. These 85 locations are a representative sub-set of a continuous random function and are univariate. Given the relatively small range of measurements (They are all within 1 order of magnitude difference) it did not seem unreasonable to leave the data as is. 
+Looking at a histogram plot of the heights, we can see that the data is somewhat normal (assuming a prettier bell curve with more bins), and is centered around 650 meters above sea level. 
+\newline
+\includegraphics[scale=0.5]{'pz_hist.png'}
+\newline
+
+As with the rainfall measurements from Switzerland, I interpolated the data to provide an estimate of what the random functions surface looks like. We can see in the heat map that the head height increases towards the bottom left, with a strong trend going diagonal across the interpolated space.
+\newline
+\includegraphics[scale=0.5]{'Rplot06.png'}
+\newline
+In order to analyze the directional trends, I employed an H-scatter plot at two lag intervals (a lag of 20 along both the x and y axes, respectively). From the two plots, we can see that the data is fairly correlated along the x axis (longitude), but not so much along the y axis (lattitude).
+
+\newline
+\inlcudegraphics[scale=0.5]{'Rplot05.png'}
+\newline
+\includegraphics[scale=0.5]{'Rplot04.png'}
+\newline
+
+\section*{Phytophthora Data}
+The Phytophtora data is the recorded precense and absence of the disease Phytopthora among bell pepper plants and their corresponding soil water percentage. For my analysis I treated this data as bi-variate (diseased and water percentage), and both latticed data (diease instances)/continuous data (water percentage). The goal of this EDA was to see if there are any trends in disease instances and soil water percentages. To do this I interpolated the soil water percentages, and then plotted disease instances over it.
+\newline
+\includegraphics[scale=0.5]{'swp.png'}
+\newline
+To see if there were directional trends in soil water percentage, used an hscatter plot with a lag of \1 along both the x and y axes, respectively. 
+\newline
+\includegraphics[scale=0.5]{'Rplot13.png'}
+\includegraphics[scale=0.5]{'Rplot14.png'}
+\newline
+We can see in the disease instances overlayed on the soil water percentage that there i some positive correlation between the two. The hscatter plots show that there is a trend along both axes, and we can see that the disease instances are not random.
+\newline
+
+\section*{Chorley Lung/Larynx Cancer Data}
+This data is clearly an instance of a point process, given that we have no ideawhat the frequency is of the cancer instances relative to the population. My initial EDA was to plot the cancer instances relative to the location of the incinerator to see if one could eyeball any obvious clustering near it.
+\newline
+\includegraphics[scale=0.5]{'Rplot15.png'}
+\newline
+While we can see signs of fairly strong clustering, It would be debatable whether or not the instances occur more frequently closer to the incinerator than not, given that we have no data on the frequency of the cancer relative to a broader scope. To test whether the data was a random process or not, I performed a quadrat test on it which produced a p-value of 5e-04, which strongly confirms the clustering hypothesis. 
+
+\end{document}  
+

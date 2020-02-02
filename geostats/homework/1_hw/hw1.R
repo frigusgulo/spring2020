@@ -53,15 +53,18 @@ wcmean <- mean(wolfcamp$data)
 wcvar <- var(wolfcamp$data)
 wcrange <- range(wolfcamp$data)
 coords = wolfcamp$coords
-wolfcamp.conc <- interp(coords[,1], coords[,2],wolfcamp$data,nx=150,ny=150)
+wolfcampwin <- movewin(coords[,1],coords[,2],wolfcamp$data,70,70,10,10)
+
+wolfcamptrans <- log(wolfcamp$data)
+wolfcamp.conc <- interp(coords[,1], coords[,2],wolfcamptrans,nx=150,ny=150)
 par(mfrow=c(1,1),mar=c(5,4,4,2))
 image(wolfcamp.conc,xlab="Easting",ylab="Northing",cex.lab=1.6,   # Creates greyscale map of interpolated
       main="Piezometric-Head Heights (meters above sea level)",   #   log concentrations using the colors
       cex.axis=1.5,col=rev(heat.colors(24)),        #   in "heat.colors" in reverse, with
       cex.main=1.2) #   axis labels and a title.
-image.legend(-220,130,zlim=range(wolfcamp$data),
+image.legend(-220,130,zlim=range(wolfcamptrans),
              col=rev(heat.colors(24)))
-hist(wolfcamp$data, xlab="Meters Above Sea Level",ylab="Frequency",
+hist(wolfcamptrans, xlab="Meters Above Sea Level",ylab="Frequency",
      cex.lab=1.6,axes=F,       #   with no axes drawn (axes=F), axis
      main="Histogram of Piezometric Head Heights", #   labels, and a title using the
      cex.main=1.6,mgp=c(2.7,1,0),density=24,    #   break points in "breaks".
@@ -69,9 +72,9 @@ hist(wolfcamp$data, xlab="Meters Above Sea Level",ylab="Frequency",
 axis(1,pos=0,cex.axis=1.5)                   # Appends an x-axis at position y=0
 axis(2,pos=0,cex.axis=1.5)
 #corrplot <- function(x,y,u,v,h,numlags,dtol=NA,atol=NA){
-corrplot(x=coords[,1],y=coords[,2],wolfcamp$data,wolfcamp$data,
+corrplot(x=coords[,1],y=coords[,2],wolfcamptrans,wolfcamptrans,
          h=c(20,0),5,dtol=10,atol=15)
-corrplot(x=coords[,1],y=coords[,2],wolfcamp$data,wolfcamp$data,
+corrplot(x=coords[,1],y=coords[,2],wolfcamptrans,wolfcamptrans,
          h=c(0,20),5,dtol=10,atol=15)
 
 #========================================================================================================
