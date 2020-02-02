@@ -3,11 +3,16 @@ library(akima)
 source("~/spring2020/geostats/scripts/image.legend.r")
 source("~/spring2020/geostats/scripts/hscatter.r")
 source("~/spring2020/geostats/scripts/corrplot.r")
+source("~/spring2020/geostats/scripts/movewin.r")
 
 #==========================================
 # Swiss Contour
 swiss <- read.table("~/spring2020/geostats/datasets/swiss.txt",header=T)
 swiss.conc <- interp(swiss$long,swiss$lat,swiss$rainfall,nx=150,ny=150)
+
+srfmean <- mean(swiss$rainfall)
+srfvar <- var(swiss$rainfall)
+srfrange <- range(swiss$rainfall)
 #swissdf = data.frame(swiss)
 image(swiss.conc,xlab="long",ylab="lat",cex.lab=1.6,   # Creates greyscale map of interpolated
       main="Greyscale Map of Rainfall",   #   log concentrations using the colors
@@ -44,6 +49,9 @@ for (i in 1:9){
 # Wolf Camp Data
 library(geoR)
 data(wolfcamp)
+wcmean <- mean(wolfcamp$data)
+wcvar <- var(wolfcamp$data)
+wcrange <- range(wolfcamp$data)
 coords = wolfcamp$coords
 wolfcamp.conc <- interp(coords[,1], coords[,2],wolfcamp$data,nx=150,ny=150)
 par(mfrow=c(1,1),mar=c(5,4,4,2))
@@ -58,16 +66,21 @@ hist(wolfcamp$data, xlab="Meters Above Sea Level",ylab="Frequency",
      main="Histogram of Piezometric Head Heights", #   labels, and a title using the
      cex.main=1.6,mgp=c(2.7,1,0),density=24,    #   break points in "breaks".
      angle=45)
-hscatter(x=coords[,1],y=coords[,2],wolfcamp$data,wolfcamp$data,
-         h=c(20,0),dtol=10,atol=15)
-hscatter(x=coords[,1],y=coords[,2],wolfcamp$data,wolfcamp$data,
-         h=c(0,20),dtol=10,atol=15)
+axis(1,pos=0,cex.axis=1.5)                   # Appends an x-axis at position y=0
+axis(2,pos=0,cex.axis=1.5)
+#corrplot <- function(x,y,u,v,h,numlags,dtol=NA,atol=NA){
 corrplot(x=coords[,1],y=coords[,2],wolfcamp$data,wolfcamp$data,
-         h=c(20,0),10,dtol=10,atol=15)
+         h=c(20,0),5,dtol=10,atol=15)
+corrplot(x=coords[,1],y=coords[,2],wolfcamp$data,wolfcamp$data,
+         h=c(0,20),5,dtol=10,atol=15)
 
 #========================================================================================================
 # Phytophthora Data
 phyto <- read.table("~/spring2020/geostats/datasets/phytoph.txt",header=T)
+phy_perc_diz <-100*(sum(phyto[,3]==1)/sum(phyto[,3]==0))
+phy_moise_mean <- mean(phyto[,4])
+phy_moise_var <- var(phyto[,4])
+phy_moist_range <- range(phyto[,4])
 phyto.conc <- interp(phyto[,1],phyto[,2],phyto[,4],nx=150,ny=150)
 image(phyto.conc,xlab="X",ylab="Y",cex.lab=1.6,   # Creates greyscale map of interpolated
       main="Soil Moisture Percentage",   #   log concentrations using the colors
@@ -75,19 +88,32 @@ image(phyto.conc,xlab="X",ylab="Y",cex.lab=1.6,   # Creates greyscale map of int
       cex.main=1.2) #   axis labels and a title.
 points(phyto[,1],phyto[,2],cex=1.5)
 points(phyto[,1][phyto[,3]==1],phyto[,2][phyto[,3]==1],pch=16,cex=1.5)
-hscatter(phyto[,1],phyto[,2],phyto[,4],phyto[,4],h=c(1,0))
-hscatter(phyto[,1],phyto[,2],phyto[,4],phyto[,4],h=c(0,1))
-
+corrplot(phyto[,1],phyto[,2],phyto[,4],phyto[,3],h=c(1,0),5,dtol=1,atol=15)
+corrplot(phyto[,1],phyto[,2],phyto[,4],phyto[,3],h=c(0,1),5,dtol=1,atol=15)
+#corrplot <- function(x,y,u,v,h,numlags,dtol=NA,atol=NA){
 #================================
 # Chorley Cancer
 library(spatstat)
 data("chorley")
-points(chorley$x,chorley$y,col="red")
 incin <- chorley.extra$incin
-quadrat.test(chorley, nx=5, ny=5,
+larynx_perc <- 100*(sum(chorley$marks == "larynx")/(sum(chorley$marks=="larynx") + sum(chorley$marks=="lung")))
+lung_perc <- 100 - larynx_perc
+quadrat.test(chorley[chorley$marks == "larynx"], nx=5, ny=5,
              alternative=c( "clustered"),
              method=c("MonteCarlo"),
              conditional=TRUE, CR=1,
              nsim=1999)
+quadrat.test(chorley[chorley$marks == "lung"], nx=5, ny=5,
+             alternative=c( "clustered"),
+             method=c("MonteCarlo"),
+             conditional=TRUE, CR=1,
+             nsim=1999)
+lung_diff <- sqrt((chorley$x[chorley$marks == "lung"] - incin$x)^2 + (chorley$y[chorley$marks == "lung"] - incin$y)^2)
+larynx_diff <- sqrt((chorley$x[chorley$marks == "larynx"] - incin$x)^2 + (chorley$y[chorley$marks == "larynx"] - incin$y)^2)
+
+corrplot(chorley$x[chorley$marks == "lung"],chorley$y[chorley$marks == "lung"],lung_diff,lung_diff,h=c(1,0),5,dtol=1,atol=15)
+corrplot(chorley$x[chorley$marks == "larynx"],chorley$y[chorley$marks == "larynx"],larynx_diff,larynx_diff,h=c(1,0),5,dtol=1,atol=15)
+corrplot(chorley$x[chorley$marks == "lung"],chorley$y[chorley$marks == "lung"],lung_diff,lung_diff,h=c(0,1),5,dtol=1,atol=15)
+corrplot(chorley$x[chorley$marks == "larynx"],chorley$y[chorley$marks == "larynx"],larynx_diff,larynx_diff,h=c(0,1),5,dtol=1,atol=15)
 chorley.extra$plotit()
 
