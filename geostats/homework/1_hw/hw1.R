@@ -111,12 +111,17 @@ quadrat.test(chorley[chorley$marks == "lung"], nx=5, ny=5,
              method=c("MonteCarlo"),
              conditional=TRUE, CR=1,
              nsim=1999)
-lung_diff <- sqrt((chorley$x[chorley$marks == "lung"] - incin$x)^2 + (chorley$y[chorley$marks == "lung"] - incin$y)^2)
-larynx_diff <- sqrt((chorley$x[chorley$marks == "larynx"] - incin$x)^2 + (chorley$y[chorley$marks == "larynx"] - incin$y)^2)
+mean_diff <- mean(sqrt((chorley$x - incin$x)^2 + (chorley$y - incin$y)^2)) # calculate average distance to incinerator
+window <- as.owin(c(346.6, 364.1, 412.6, 430.3))
+samples <- 100
+csr <- rpoispp(lambda=1,win=window,nsim=samples)
+means <- integer(samples)
+for (i in 1:samples){
+  ind = paste("Simulation",i,sep=" ")
+  val <- mean(sqrt((csr[[ind]][["x"]] - incin$x)^2 + (csr[[ind]][["y"]] - incin$y)^2))
+  means[i] <- val
+}
+probs_close = pnorm(mean_diff, mean=mean(means),sd=sd(means),lower.tail=TRUE)
 
-corrplot(chorley$x[chorley$marks == "lung"],chorley$y[chorley$marks == "lung"],lung_diff,lung_diff,h=c(1,0),5,dtol=1,atol=15)
-corrplot(chorley$x[chorley$marks == "larynx"],chorley$y[chorley$marks == "larynx"],larynx_diff,larynx_diff,h=c(1,0),5,dtol=1,atol=15)
-corrplot(chorley$x[chorley$marks == "lung"],chorley$y[chorley$marks == "lung"],lung_diff,lung_diff,h=c(0,1),5,dtol=1,atol=15)
-corrplot(chorley$x[chorley$marks == "larynx"],chorley$y[chorley$marks == "larynx"],larynx_diff,larynx_diff,h=c(0,1),5,dtol=1,atol=15)
 chorley.extra$plotit()
 
