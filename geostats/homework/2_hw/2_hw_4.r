@@ -9,12 +9,10 @@ source("~/spring2020/geostats/scripts/polydec.r")# Loads R-script with all of my
 source("~/spring2020/geostats/scripts/celldec.r")
 
 
-xy = LongLatToUTM(gravity$long, gravity$lat,11)
-x = xy$X; y = xy$Y
-z = gravity$gravity
-p = 2
-r = c(20000,40000,60000,80000,100000)
+xy <- LongLatToUTM(gravity$long, gravity$lat,11)
+p <- 2
+r <- c(20000,40000,60000,80000,100000)
 
 for (i in 1:5){
-  point.crossval(x,y,z,p,r[i])
+  point.crossval(xy$X,xy$Y,gravity$gravity,2,r[i])
 }
