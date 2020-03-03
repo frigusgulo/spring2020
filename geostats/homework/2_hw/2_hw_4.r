@@ -36,15 +36,15 @@ qqplot( gravity$gravity,out$pred.iw)
 #scatters
 plot(gravity$gravity,out$pred.pd,main="Prediction Polygonal Declustering")
 lines(lowess( gravity$gravity,out$pred.pd))
-
+abline(h=45)
 plot( gravity$gravity,out$pred.tr,main="Prediction Triangulation")
 lines(lowess( gravity$gravity,out$pred.tr))
-
+abline(h=45)
 plot( gravity$gravity,out$pred.ls,main="Prediction Local Sample Mean")
 lines(lowess(gravity$gravity,out$pred.ls))
-
+abline(h=45)
 plot(gravity$gravity,out$pred.iw,main="Prediction Inverse Distance")
 lines(lowess(gravity$gravity,out$pred.iw))
-
+abline(h=45)
 
 

@@ -16,12 +16,13 @@ source("~/spring2020/geostats/scripts/allfunctions.r")
 snow <- read.table("~/spring2020/geostats/homework/2_hw/snowdep.txt",header=T,sep = ",")
 
 # 3 a - box plot, histogram, heatmap, correlogram (both axes)
-snow.conc <- interp(snow$x,snow$y,snow$depth,nx=1500,ny=1500)
+snow.conc <- interp(snow$x,snow$y,snow$depth,nx=100,ny=100)
 
 image(snow.conc,xlab="long",ylab="lat",cex.lab=1.6,   # Creates greyscale map of interpolated
       main="Greyscale Map of Snowfall",   #   log concentrations using the colors
       cex.axis=1.5,col=rev(heat.colors(24)),        #   in "heat.colors" in reverse, with
       cex.main=1.2) #   axis labels and a title.
+points(snow$x,snow$y)
 image.legend(6,47.8,zlim=range(snow$depth),       # Puts a legend on the map with upper
              col=rev(heat.colors(24)))
 

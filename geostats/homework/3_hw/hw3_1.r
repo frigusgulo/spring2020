@@ -3,11 +3,20 @@ library(lattice)
 library(sp)
 source("~/spring2020/geostats/scripts/allfunctions.r")
 source("~/spring2020/geostats/scripts/movewin.r")
+source("~/spring2020/geostats/scripts/rose.r")
 phytopthora = read.table("~/spring2020/geostats/datasets/phytoph.txt",header=T)
 phy.mat = matrix(phytopthora$moist,nrow=20,byrow=T)
 phy.mat[5,4] = NA
-phy.mp = medpolish(phymat,na.rm=T)
+phy.mp = medpolish(phy.mat,na.rm=T)
 phy.trend = phy.mat - phy.mp$residuals
+newx = phytopthora$row[-84]
+newy = phytopthora$col[-84]
+moist2 = data.frame(newx=newx,newy=newy, resid=c(phy.mp$residuals)[-84])
+coordinates(moist2) = ~newx+newy
+vario = variogram(coordinates(moist2),data=moist2,width=10,cutoff=100)
+
+
+
 par(mfrow=c(1,3)) 
 all <- c(phy.mat,phy.trend)
 zmin <- min(all)
@@ -31,7 +40,6 @@ x=1:20
 y=1:20
 v = phy.mp$resid
 
-vario = variogram()
 
 x=1:20
 y=1:20

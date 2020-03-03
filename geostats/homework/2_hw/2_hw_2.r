@@ -1,10 +1,15 @@
 library(geoR)
 library(spatial)
+library(fields)
 source("~/spring2020/geostats/scripts/corrplot.r")
 source("~/spring2020/geostats/scripts/hscatter.r")
 landsat <- read.table("~/spring2020/geostats/homework/2_hw/landsateng.txt",header=T)
 landsat_mat = as.matrix(landsat)
 bandCovariance = cov(landsat_mat[,3:9])
+
+for (i in 3:9){
+  image.plot(interp(landsat_mat[,1],landsat_mat[,2],landsat_mat[,i],nx=100,ny=100))
+}
 
 ###############################################
 corrplot(x=landsat_mat[,1],y=landsat_mat[,2],landsat_mat[,4],landsat_mat[,4],
