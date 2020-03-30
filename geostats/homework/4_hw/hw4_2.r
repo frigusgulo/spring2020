@@ -50,3 +50,21 @@ STD = sqrt(Var)
 #########################################
 # Part C
 
+euclideanDistance = function(vec1,vec2){
+  dist = rep(0,NROW(vec1))
+  z = NROW(vec1)
+  for (i in 1:z){
+    dist[i] = sqrt( (vec1[i,1] -vec2[1,1])^2 + (vec1[i,2] -vec2[1,2])^2 )
+  }
+  return(dist)
+}
+
+dist = euclideanDistance(cbind(x,y),cbind(155,235))
+IDW = 1 / dist^2
+pred = IDW%*%v
+
+################################
+# Part C
+locx = 155
+locy = 235
+range = c(20,40,50)
