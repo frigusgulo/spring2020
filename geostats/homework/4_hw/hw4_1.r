@@ -37,6 +37,10 @@ catch_t.conc = interp(X,Y,catch_t_log,nx=75,ny=75)
 par(mfrow=c(1,1))
 map("usa",xlim=c(-75,-71),ylim=c(38.2,41.5),fill=T,col=2)
 points(scallops$long,scallops$lat,pch=16,cex=.75)
+image(catch_t.conc,xlab="Longitude",ylab="Latitude",cex.lab=1.6,   # Creates greyscale map of interpolated
+      main="Total Catch",   #   log concentrations using the colors
+      cex.axis=1.5,col=rev(heat.colors(24)),        #   in "heat.colors" in reverse, with
+      cex.main=1.2) #   axis labels and a title.
 contour(catch_t.conc,add=T)
 ############################
 
@@ -133,7 +137,9 @@ angles = seq(0,165,15)
 df <- data.frame(x,y,data=catch_t_log_resids)
 coordinates(df) = ~x+y
 catch_t_log_resids.vario_dir = variogram(data~1,data=df,width=0.1,cutoff=1,alpha=angles,tol.hor = 30 )
+catch_t_log_resids.vario = variogram(data~1,data=df,width=0.1,cutoff=1)
 plot(catch_t_log_resids.vario_dir,main='Directional Variograms For Log Transformed Catch Residuals' )
+plot(catch_t_log_resids.vario,main='Isotropic Variogram for Log Transformed Catch Residuals')
 rose(catch_t_log_resids.vario_dir,2.3)
 
 
@@ -155,12 +161,12 @@ newy = coords_corrected[,2]
 df_c = data.frame(x=newx,y=newy,data=catch_t_log_resids)
 coordinates(df_c) = ~x+y
 iso_var = variogram(data~1,data=df_c,width=0.1,cutoff=1)
-par(mfrow=c(1,2))
+par(mfrow=c(1,1))
 plot(iso_var,main="Isotropic Variogram For Corrected Points")
 ###########################################
 
 # PART G
-model1 = fit.variogram(iso_var,vgm("Sph"))
+model1 = fit.variogram(catch_t_log_resids.vario_dir,vgm(1.1,"Sph",0.3,1.4,anis=c(90,0.4)))
 plot(iso_var, model1 ,main="Empirical Variogram and Fitted Values")
 summary(model1)
 
@@ -174,7 +180,7 @@ plot(catch_t_log_resids.vario_dir,model1,main="Anisotropy-Corrected Variograms" 
 #############################################
 
 # PART I
-
+par(mfrow=c(1,1))
 poly = chull(x,y)
 minx = min(x)
 maxx = max(x)
@@ -183,18 +189,35 @@ maxy = max(y)
 seqx = seq(minx,maxx,0.2)
 seqy = seq(miny,maxy,0.2)
 poly.in = polygrid(seqx,seqy, cbind(x,y)[poly,])
-points(poly.in)
+coordinates(poly.in) = ~x+y
 scall.rot <- data.frame(x,y,resid=catch_t_log_resids)
 coordinates(scall.rot) = ~x+y
 krige.out = krige(resid ~ 1, scall.rot ,poly.in, model=model1)
+
+
+pred_var = interp(krige.out@coords[,1],krige.out@coords[,2],krige.out@data[["var1.pred"]],nx=150,ny=150)
+pred_std = interp(krige.out@coords[,1],krige.out@coords[,2],krige.out@data[["var1.var"]],nx=150,ny=150)
+
+
+par(mfrow=c(1,2))
+image(pred_var,xlab="Longitude",ylab="Latitude",cex.lab=1.6,main="Res Pred From Kriging",cex.axis=1.5,col=rev(heat.colors(24)),cex.main=1.2) 
+contour(pred_var,main="Pred Res Contour")
+
+par(mfrow=c(1,2))
+image(pred_std,xlab="Longitude",ylab="Latitude",cex.lab=1.6,main="Res STD From Kriging",cex.axis=1.5,col=rev(heat.colors(24)),cex.main=1.2) 
+contour(pred_std,main="Pred STD Contour")
+
 
 #####################################
 
 # part J
 
-pred_catch = exp(catch_t_log_trend + krige.out)
-
-par(c(1,2))
+trend = zfunc(poly.in@coords[,1],poly.in@coords[,2])
+predictions = krige.out@data[["var1.pred"]] + trend
+predictions.interp = interp(krige.out@coords[,1],krige.out@coords[,2],predictions,nx=150,ny=150)
+par(mfrow=c(1,2))
+image(predictions.interp,xlab="Longitude",ylab="Latitude",cex.lab=1.6,main="Pred Log Catch From Kriging",cex.axis=1.5,col=rev(heat.colors(24)),cex.main=1.2) 
+contour(predictions.interp,main="Pred Log Catch Contour")
 
 
 
