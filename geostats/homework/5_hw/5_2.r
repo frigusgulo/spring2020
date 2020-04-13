@@ -1,0 +1,11 @@
+library(gstat)
+library(lattice) 
+library(sp)
+library(spdep)
+air = read.table("~/spring2020/geostats/datasets/air.txt",header=T)
+air = data.frame(easting=air$easting,northing=air$northing,ammonia=air$ammonia,nitoxides=air$nitoxides)
+coordinates(air) = ~easting+northing
+coords = coordinates(air)
+air.nb = dnearneigh(coords,0,20,longlat=T)
+air.W = nb2listw(air.nb,style="B",zero.policy=T)
+air.nullslm = spautolm(air.nitoxides ~ 1,data=air.nitoxides,family='CAR',listw=air.W,weights=)
